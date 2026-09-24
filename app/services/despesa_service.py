@@ -1,8 +1,11 @@
 from app.models.despesa import Despesa
 from app.models.usuario import Usuario
+from app.services.cambio_service import CambioService
 from app.extensions import db
 from datetime import datetime
 from sqlalchemy import func
+
+cambio_service = CambioService()
 
 class DespesaService:
     def criar_despesa(self, data: dict) -> Despesa:
@@ -59,3 +62,6 @@ class DespesaService:
         
         db.session.delete(despesa)
         db.session.commit()
+
+    def converte_despesa(self, despesa: Despesa, moeda_destino: str):
+        return cambio_service.converter_moeda(despesa.valor, despesa.moeda, moeda_destino)

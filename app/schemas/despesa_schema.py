@@ -58,6 +58,10 @@ class TipoTotalPathSchema(BaseModel):
     tipo: str = "Alimentação"
 
 
+class MoedaTotalPathSchema(BaseModel):
+    moeda: str = "BRL"
+
+
 class DespesaViewUsuarioTotalSchema(BaseModel):
     nome: str = "João da Silva"
     total: float

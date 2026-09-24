@@ -16,6 +16,7 @@ from app.schemas.despesa_schema import (
     DespesaViewUsuarioTotalSchema,
     ListagemDespesasSchema,
     TipoTotalPathSchema,
+    MoedaTotalPathSchema,
     UsuarioTotalPathSchema
 )
 
@@ -56,6 +57,7 @@ def criar_despesa(body: DespesaSchema):
             id = despesa.id,
             nome = despesa.nome,
             valor = despesa.valor,
+            moeda = despesa.moeda,
             tipo = despesa.tipo,
             data_despesa = despesa.data_despesa,
             comentario = despesa.comentario,
@@ -155,6 +157,11 @@ def excluir_despesa(path: DespesaBuscaSchema):
 
 
 # =========================
+# CAMBIO DESPESA
+# =========================
+
+
+# =========================
 # TOTAIS
 # =========================
 @despesa_bp.get(
@@ -202,3 +209,18 @@ def total_por_tipo(path: TipoTotalPathSchema):
         total = service_despesa.calcula_despesas_totais_por_tipo(path.tipo)
     )
     return resultado_tipo_total.model_dump(), 200
+
+
+@despesa_bp.get(
+    "/total/moeda/<string:moeda>",
+    responses={200: DespesaViewMoedaTotalSchema}
+)
+def total_por_moeda(path: MoedaTotalPathSchema):
+    """
+    Total de despesas por moeda
+    """
+    resultado_moeda_total = DespesaViewMoedaTotalSchema (
+        moeda = path.moeda,
+        total = service_despesa.calcula_despesas_totais_por_moeda(path.moeda)
+    )
+    return resultado_moeda_total.model_dump(), 200
