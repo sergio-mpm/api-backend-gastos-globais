@@ -23,4 +23,16 @@ def create_app():
     migrate.init_app(app, db)
 
     from app.models import usuario, despesa
-    
+
+    # Registro de rotas e blueprints
+    from app.controllers.usuario_controller import usuario_bp
+    from app.controllers.despesa_controller import despesa_bp
+    from app.controllers.auth_controller import auth_bp
+    app.register_api(usuario_bp)
+    app.register_api(despesa_bp)
+    app.register_api(auth_bp)
+
+    app.security = [{"bearerAuth": []}]
+
+
+    return app

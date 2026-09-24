@@ -1,5 +1,6 @@
 from app.models.usuario import Usuario
 from app.extensions import db
+from werkzeug.security import generate_password_hash
 
 class UsuarioService:
     def criar_usuario(self, data:dict) -> Usuario:
@@ -49,6 +50,9 @@ class UsuarioService:
 
         if "data_nascimento" in data:
             usuario.data_nascimento = data["data_nascimento"]
+
+        if "senha" in data:
+            usuario.senha = generate_password_hash(data["senha"])
 
         db.session.commit()
         return usuario
