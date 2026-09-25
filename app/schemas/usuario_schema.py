@@ -9,7 +9,6 @@ class UsuarioSchema(BaseModel):
     nome: str
     email: Optional[str] = None
     senha: str
-    data_nascimento: Optional[DateTime] = None
     despesas: Optional[List[dict]] = []
 
     model_config = {
@@ -25,7 +24,6 @@ class UsuarioViewSchema(BaseModel):
     cpf: str
     nome: str
     email: Optional[str] = None
-    data_nascimento: Optional[DateTime] = None
 
     model_config = {
         "from_attributes": True

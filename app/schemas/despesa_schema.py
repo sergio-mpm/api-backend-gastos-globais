@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from marshmallow import Schema, fields
 from datetime import datetime
@@ -13,7 +13,7 @@ class DespesaSchema(BaseModel):
     valor: float = "25.99"
     moeda: str = "BRL"
     tipo: str = "Alimentação"
-    data_despesa: datetime = datetime.now
+    data_despesa: datetime = Field(default_factory=datetime.now)
     cpf: str = "12345678900"
     comentario: str = "Lanche da tarde"
     
@@ -82,6 +82,10 @@ class DespesaDeleteSchema(BaseModel):
     message: str
 
 
+class ListaMoedasSchema(BaseModel):
+    moedas: List[str]
+
+
 def apresenta_despesas(despesas: List[Despesa]) -> dict:
     return {
         "despesas": [
@@ -108,7 +112,7 @@ class DespesaUpdateSchema(BaseModel):
     valor: float = "35.99"
     moeda: str = "BRL"
     tipo: str = "Alimentação"
-    data_despesa: datetime = datetime.now
+    data_despesa: datetime = Field(default_factory=datetime.now)
     comentario: str | None = None
     responsavel: str | None = None
 

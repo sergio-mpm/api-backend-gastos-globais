@@ -14,7 +14,6 @@ class Usuario(db.Model):
     nome = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), nullable=True)
     senha = db.Column(db.String(255), nullable=False)
-    data_nascimento = db.Column(db.DateTime)
 
     despesas = db.relationship(
         "Despesa",
@@ -23,7 +22,7 @@ class Usuario(db.Model):
     )
 
 
-    def __init__(self, cpf:str, nome:str, email:str, senha:str, data_nascimento:DateTime):
+    def __init__(self, cpf:str, nome:str, email:str, senha:str):
         """
             instancia um usuario no sistema
 
@@ -32,13 +31,11 @@ class Usuario(db.Model):
                 nome: nome do usuario
                 email: email do usuario no sistema
                 senha: senha do usuario para autenticacao
-                data_nascimento: data de nascimento do usuario para identificar idade
         """
         self.cpf = cpf
         self.nome = nome
         self.email = email
         self.senha = senha
-        self.data_nascimento = data_nascimento
 
     def to_dict(self):
         return {
@@ -46,6 +43,5 @@ class Usuario(db.Model):
             "nome": self.nome,
             "email": self.email,
             "senha": self.senha,
-            "data_nascimento": self.data_nascimento,
             "despesas": self.despesas
         }

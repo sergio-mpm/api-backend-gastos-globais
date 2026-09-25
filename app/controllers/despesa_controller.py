@@ -18,7 +18,8 @@ from app.schemas.despesa_schema import (
     ListagemDespesasSchema,
     TipoTotalPathSchema,
     MoedaTotalPathSchema,
-    UsuarioTotalPathSchema
+    UsuarioTotalPathSchema,
+    ListaMoedasSchema
 )
 import requests
 
@@ -163,7 +164,7 @@ def excluir_despesa(path: DespesaBuscaSchema):
 # =========================
 @despesa_bp.get(
     "/moedas",
-    responses={200: list[str], 404: ErrorSchema}
+    responses={200: ListaMoedasSchema, 404: ErrorSchema}
 )
 def listar_moedas():
     url = "https://api.frankfurter.dev/v1/currencies"
@@ -171,7 +172,8 @@ def listar_moedas():
         response = requests.get(url)
         response.raise_for_status()
         currencies = response.json()  # Ex: {"USD": "US Dollar", "EUR": "Euro", ...}
-        return jsonify(currencies)
+        data = jsonify(currencies)
+        return ListaMoedasSchema(moedas=list(data.keys())).model_dump(), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -48,9 +48,6 @@ class UsuarioService:
         if "email" in data:
             usuario.email = data["email"]
 
-        if "data_nascimento" in data:
-            usuario.data_nascimento = data["data_nascimento"]
-
         if "senha" in data:
             usuario.senha = generate_password_hash(data["senha"])
 
