@@ -1,5 +1,6 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_openapi3 import APIBlueprint, Tag
+from flask import jsonify
 from app.services.despesa_service import DespesaService
 from app.services.auth_service import AuthService
 from app.services.usuario_service import UsuarioService
@@ -19,6 +20,7 @@ from app.schemas.despesa_schema import (
     MoedaTotalPathSchema,
     UsuarioTotalPathSchema
 )
+import requests
 
 
 despesa_tag = Tag(
@@ -157,8 +159,21 @@ def excluir_despesa(path: DespesaBuscaSchema):
 
 
 # =========================
-# CAMBIO DESPESA
+# LISTAR MOEDAS - EXTERNO
 # =========================
+@despesa_bp.get(
+    "/moedas",
+    responses={200: list[str], 404: ErrorSchema}
+)
+def listar_moedas():
+    url = "https://api.frankfurter.dev/v1/currencies"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        currencies = response.json()  # Ex: {"USD": "US Dollar", "EUR": "Euro", ...}
+        return jsonify(currencies)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # =========================
