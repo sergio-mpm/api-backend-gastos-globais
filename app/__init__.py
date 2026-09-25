@@ -32,7 +32,4 @@ def create_app():
     app.register_api(despesa_bp)
     app.register_api(auth_bp)
 
-    app.security = [{"bearerAuth": []}]
-
-
     return app

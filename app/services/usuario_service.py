@@ -7,12 +7,18 @@ class UsuarioService:
         cpf = data.get("cpf", "")
         if not cpf or len(cpf) != 11:
             raise ValueError("CPF Inválido")
-        
-        usuario = Usuario.query.get(data["cpf"])
+
+        usuario = Usuario.query.get(cpf)
         if usuario:
             raise ValueError("Usuário já cadastrado")
-        
-        usuario = Usuario(**data)
+
+        payload = dict(data)
+        payload.pop("despesas", None)
+
+        if "senha" in payload and payload["senha"]:
+            payload["senha"] = generate_password_hash(payload["senha"])
+
+        usuario = Usuario(**payload)
         db.session.add(usuario)
         db.session.commit()
 

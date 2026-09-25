@@ -1,4 +1,3 @@
-from flask_jwt_extended import jwt_required
 from flask_openapi3 import APIBlueprint, Tag
 from app.services.usuario_service import UsuarioService
 from app.schemas.error_schema import ErrorSchema
@@ -35,14 +34,24 @@ def cadastrar_usuario(body: UsuarioSchema):
         return UsuarioViewSchema.model_validate(usuario).model_dump(), 200
     except ValueError as e:
         return {"message": str(e)}, 400
-    
+
+
+@usuario_bp.get(
+    "",
+    responses={200: ListagemUsuariosSchema, 400: ErrorSchema}
+)
+def listar_usuarios():
+    try:
+        usuarios = service_usuario.listar_usuarios()
+        return {"usuarios": [UsuarioViewSchema.model_validate(usuario).model_dump() for usuario in usuarios]}, 200
+    except ValueError as e:
+        return {"message": str(e)}, 400
+
 
 @usuario_bp.get(
     "/<string:cpf>",
-    security=[{"bearerAuth": []}],
     responses={200: UsuarioViewSchema, 404: ErrorSchema}
 )
-@jwt_required()
 def consultar_usuario(path: UsuarioBuscaSchema):
     try:
         usuario = service_usuario.obter_usuario(path.cpf)
@@ -55,7 +64,6 @@ def consultar_usuario(path: UsuarioBuscaSchema):
     "/<string:cpf>",
     responses={200: UsuarioViewSchema, 404: ErrorSchema}
 )
-@jwt_required()
 def atualizar_usuario(path: UsuarioBuscaSchema, body: UsuarioSchema):
     try:
         usuario = service_usuario.atualiza_cadastro_usuario(
@@ -71,7 +79,6 @@ def atualizar_usuario(path: UsuarioBuscaSchema, body: UsuarioSchema):
     "/<string:cpf>",
     responses={204: None, 404: ErrorSchema}
 )
-@jwt_required()
 def excluir_usuario(path: UsuarioBuscaSchema):
     try:
         service_usuario.excluir_usuario(path.cpf)

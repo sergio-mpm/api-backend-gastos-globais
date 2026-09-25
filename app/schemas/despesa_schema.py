@@ -77,6 +77,25 @@ class DespesaViewMoedaTotalSchema(BaseModel):
     total: float
 
 
+class TotalPorMoedaSchema(BaseModel):
+    moeda: str
+    total: float
+
+
+class ListaTotaisPorMoedaSchema(BaseModel):
+    totais: List[TotalPorMoedaSchema]
+
+
+class TotalConvertidoSchema(BaseModel):
+    moeda: str
+    totalOriginal: float
+    totalConvertido: float
+
+
+class ListaTotaisConvertidosSchema(BaseModel):
+    totais: List[TotalConvertidoSchema]
+
+
 class DespesaDeleteSchema(BaseModel):
     id: int
     message: str

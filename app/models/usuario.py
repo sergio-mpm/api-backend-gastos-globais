@@ -22,7 +22,7 @@ class Usuario(db.Model):
     )
 
 
-    def __init__(self, cpf:str, nome:str, email:str, senha:str):
+    def __init__(self, cpf:str, nome:str, email:str, senha:str, despesas=None):
         """
             instancia um usuario no sistema
 
@@ -36,6 +36,8 @@ class Usuario(db.Model):
         self.nome = nome
         self.email = email
         self.senha = senha
+        if despesas is not None:
+            self.despesas = despesas
 
     def to_dict(self):
         return {

@@ -1,4 +1,3 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_openapi3 import APIBlueprint, Tag
 from flask import jsonify
 from app.services.despesa_service import DespesaService
@@ -19,7 +18,11 @@ from app.schemas.despesa_schema import (
     TipoTotalPathSchema,
     MoedaTotalPathSchema,
     UsuarioTotalPathSchema,
-    ListaMoedasSchema
+    ListaMoedasSchema,
+    ListaTotaisPorMoedaSchema,
+    TotalPorMoedaSchema,
+    ListaTotaisConvertidosSchema,
+    TotalConvertidoSchema
 )
 import requests
 
@@ -116,23 +119,19 @@ def buscar_despesa(path: DespesaBuscaSchema):
 # =========================
 @despesa_bp.put(
     "/<int:id>",
-    security=[{"bearerAuth": []}],
     responses={200: DespesaViewSchema, 404: ErrorSchema}
 )
-@jwt_required()
 def atualizar_despesa(path: DespesaBuscaSchema, body: DespesaUpdateSchema):
     """
     Atualiza uma despesa parcialmente
     """
-    if service_auth.autorizar_atualizar_despesa(path.id, get_jwt_identity()) is False:
-        return {"message:", "Somente usuário responsável pode atualizar essa despesa."}
-    
     try:
-        despesa = service_despesa.atualiza_despesa(
+        despesa = service_despesa.atualizar_despesa(
             path.id,
             body.model_dump(exclude_unset=True)
         )
-        return DespesaViewSchema.model_validate(despesa).model_dump(), 200
+        resultado = service_despesa.serializar_nome_responsavel_despesa(despesa, despesa.cpf)
+        return DespesaViewSchema.model_validate(resultado).model_dump(), 200
     except ValueError as e:
         return {"message": str(e)}, 404
 
@@ -169,11 +168,10 @@ def excluir_despesa(path: DespesaBuscaSchema):
 def listar_moedas():
     url = "https://api.frankfurter.dev/v1/currencies"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=15)
         response.raise_for_status()
-        currencies = response.json()  # Ex: {"USD": "US Dollar", "EUR": "Euro", ...}
-        data = jsonify(currencies)
-        return ListaMoedasSchema(moedas=list(data.keys())).model_dump(), 200
+        currencies = response.json()
+        return ListaMoedasSchema(moedas=list(currencies.keys())).model_dump(), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -241,3 +239,57 @@ def total_por_moeda(path: MoedaTotalPathSchema):
         total = service_despesa.calcula_despesas_totais_por_moeda(path.moeda)
     )
     return resultado_moeda_total.model_dump(), 200
+
+
+@despesa_bp.get(
+    "/total/moedas",
+    responses={200: ListaTotaisPorMoedaSchema, 404: ErrorSchema}
+)
+def total_por_todas_moedas():
+    """
+    Retorna o total de despesas agrupado por moeda
+    """
+    try:
+        totais = service_despesa.calcula_totais_por_moeda()
+        resultado = ListaTotaisPorMoedaSchema(
+            totais=[TotalPorMoedaSchema(**item) for item in totais]
+        )
+        return resultado.model_dump(), 200
+    except ValueError as e:
+        return {"message": str(e)}, 404
+
+
+@despesa_bp.get(
+    "/total/conversao",
+    responses={200: ListaTotaisConvertidosSchema, 404: ErrorSchema}
+)
+def total_convertido_para_brl():
+    """
+    Retorna os totais agrupados por moeda convertidos para BRL
+    """
+    try:
+        totais = service_despesa.calcula_totais_convertidos_para_moeda("BRL")
+        resultado = ListaTotaisConvertidosSchema(
+            totais=[TotalConvertidoSchema(**item) for item in totais]
+        )
+        return resultado.model_dump(), 200
+    except ValueError as e:
+        return {"message": str(e)}, 404
+
+
+@despesa_bp.get(
+    "/total/conversao/<string:moeda>",
+    responses={200: ListaTotaisConvertidosSchema, 404: ErrorSchema}
+)
+def total_convertido_para_moeda(path: MoedaTotalPathSchema):
+    """
+    Retorna os totais agrupados por moeda convertidos para a moeda especificada
+    """
+    try:
+        totais = service_despesa.calcula_totais_convertidos_para_moeda(path.moeda)
+        resultado = ListaTotaisConvertidosSchema(
+            totais=[TotalConvertidoSchema(**item) for item in totais]
+        )
+        return resultado.model_dump(), 200
+    except ValueError as e:
+        return {"message": str(e)}, 404
