@@ -116,7 +116,7 @@ Para executar a aplicação usando o Docker, siga os passos abaixo:
 
 2. Clone o repositório para uma pasta de sua preferência, na mesma pasta clone também o frontend da aplicação: [api-web-gastos-globais](https://github.com/sergio-mpm/api-web-gastos-globais).
 
-3. Abra o terminal ou prompt de comando e navegue até o diretório criado para abrigar ambos os projetos, onde o arquivo `docker-compose` está localizado.
+3. Abra o terminal ou prompt de comando e navegue até o diretório criado para abrigar ambos os projetos, onde o arquivo `docker-compose-2` deverá ser copiado da raiz daqui do backend e renomeado para `docker-compose` apenas.
 
 4. Execute o comando ```docker compose up --build -d```
 
