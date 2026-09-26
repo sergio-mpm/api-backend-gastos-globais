@@ -2,6 +2,8 @@
 
 Esse projeto é o desenvolvimento Back-end para a aplicação Gastos Globais, que é o MVP de Arquitetura de Software do programa de Pós-graduação de 2026 da PUC-Rio -> Criada por Sergio Gustavo M. P. Moreira
 
+Essa aplicação faz uso da API externa [Frankfurter.dev](https://frankfurter.dev/pt/) para realização de conversões cambiais em tempo real. O projeto visa apresentar um controlador de despesas globais.
+
 ## Como Executar
 
 Serão necessárias algumas instalações de dependências em sua máquina caso queira utilizar. Primeiramente vamos abordar como foi construída a aplicação detalhe por detalhe.
